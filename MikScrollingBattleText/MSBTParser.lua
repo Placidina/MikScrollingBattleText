@@ -26,6 +26,7 @@ local UnitGUID = UnitGUID
 local UnitName = UnitName
 local Print = MikSBT.Print
 local EraseTable = MikSBT.EraseTable
+local GetSpellInfo = C_Spell and C_Spell.GetSpellInfo or GetSpellInfo
 
 local Obliterate = GetSpellInfo(49020)
 local FrostStrike = GetSpellInfo(49143)

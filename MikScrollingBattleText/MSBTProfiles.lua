@@ -27,6 +27,8 @@ local Print = MikSBT.Print
 local GetSkillName = MikSBT.GetSkillName
 
 local IsClassic = WOW_PROJECT_ID >= WOW_PROJECT_CLASSIC
+local LoadAddOn = C_AddOns and C_AddOns.LoadAddOn or LoadAddOn
+local IsAddOnLoaded = C_AddOns and C_AddOns.IsAddOnLoaded or IsAddOnLoaded
 
 
 -------------------------------------------------------------------------------
@@ -3276,7 +3278,12 @@ local function SetupBlizzardOptions()
 	)
 
 	-- Add the frame as a new category to Blizzard's interface options.
-	InterfaceOptions_AddCategory(frame)
+	if InterfaceOptions_AddCategory then
+		InterfaceOptions_AddCategory(frame)
+	else
+		local category, layout = Settings.RegisterCanvasLayoutCategory(frame, frame.name);
+		Settings.RegisterAddOnCategory(category);
+	end
 end
 
 

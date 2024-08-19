@@ -21,8 +21,8 @@ local MSBTParser = MikSBT.Parser
 local string_gsub = string.gsub
 local string_format = string.format
 local math_ceil = math.ceil
-local GetItemInfo = GetItemInfo
-local GetItemCount = GetItemCount
+local GetItemInfo = C_Item and C_Item.GetItemInfo or GetItemInfo
+local GetItemCount = C_Item and C_Item.GetItemCount or GetItemCount
 local DisplayEvent = MikSBT.Animations.DisplayEvent
 
 

@@ -19,8 +19,10 @@ local string_sub = string.sub
 local string_gsub = string.gsub
 local string_match = string.match
 local math_floor = math.floor
-local GetSpellInfo = GetSpellInfo
-
+local GetSpellInfo = C_Spell and C_Spell.GetSpellInfo or GetSpellInfo
+local LoadAddOn = C_AddOns and C_AddOns.LoadAddOn or _G.LoadAddOn
+local GetSpellTexture = C_Spell and C_Spell.GetSpellTexture or GetSpellTexture
+local GetAddOnMetadata =  C_AddOns and C_AddOns.GetAddOnMetadata or GetAddOnMetadata
 
 -------------------------------------------------------------------------------
 -- Mod constants
@@ -132,11 +134,11 @@ end
 -- Returns a skill name for the passed id or unknown if the id invalid.
 -- ****************************************************************************
 local function GetSkillName(skillID)
-	local skillName = GetSpellInfo(skillID)
-	if (not skillName) then
+	local spell = GetSpellInfo(skillID)
+	if (not spell) then
 		Print("Skill ID " .. tostring(skillID) .. " has been removed by Blizzard.")
 	end
-	return skillName or UNKNOWN
+	return spell.name or UNKNOWN
 end
 
 

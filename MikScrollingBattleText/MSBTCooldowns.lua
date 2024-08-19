@@ -22,11 +22,12 @@ local string_gsub = string.gsub
 local string_find = string.find
 local string_format = string.format
 local string_match = string.match
-local GetSpellCooldown = GetSpellCooldown
+local GetSpellCooldown = C_Spell and C_Spell.GetSpellCooldown or GetSpellCooldown
 local EraseTable = MikSBT.EraseTable
 local GetSkillName = MikSBT.GetSkillName
 local DisplayEvent = MikSBT.Animations.DisplayEvent
 local HandleCooldowns = MSBTTriggers.HandleCooldowns
+local GetSpellInfo = C_Spell and C_Spell.GetSpellInfo or GetSpellInfo
 
 
 
