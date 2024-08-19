@@ -24,6 +24,7 @@ local string_format = string.format
 local string_gmatch = string.gmatch
 local FormatLargeNumber = FormatLargeNumber
 local GetSpellInfo = C_Spell and C_Spell.GetSpellInfo or GetSpellInfo
+local GetSpellCooldown = C_Spell and C_Spell.GetSpellCooldown or GetSpellCooldown
 local Print = MikSBT.Print
 local EraseTable = MikSBT.EraseTable
 local DisplayEvent = MikSBT.Animations.DisplayEvent
