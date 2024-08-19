@@ -99,7 +99,7 @@ MSBT is designed to be an extremely lightweight, efficient, and highly configura
 
 ## Installation
 
-1. Download ziped addon from [release page](https://github.com/Placidina/MikScrollingBattleText).
+1. Download ziped addon from [release page](https://github.com/Placidina/MikScrollingBattleText/releases).
 2. Extract the files and place the folder in `World of Warcraft/_retail_/Interface/AddOns/`.
 3. Enable the addon from the character selection screen in World of Warcraft.
 
