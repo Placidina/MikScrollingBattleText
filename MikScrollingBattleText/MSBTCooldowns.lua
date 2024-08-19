@@ -22,14 +22,12 @@ local string_gsub = string.gsub
 local string_find = string.find
 local string_format = string.format
 local string_match = string.match
-local GetSpellCooldown = C_Spell and C_Spell.GetSpellCooldown or GetSpellCooldown
+local MSBTGetSpellCooldown = MikSBT.MSBTGetSpellCooldown
 local EraseTable = MikSBT.EraseTable
+local MSBTGetSpellInfo = MikSBT.MSBTGetSpellInfo
 local GetSkillName = MikSBT.GetSkillName
 local DisplayEvent = MikSBT.Animations.DisplayEvent
 local HandleCooldowns = MSBTTriggers.HandleCooldowns
-local GetSpellInfo = C_Spell and C_Spell.GetSpellInfo or GetSpellInfo
-
-
 
 -------------------------------------------------------------------------------
 -- Constants.
@@ -105,7 +103,7 @@ end
 -- ****************************************************************************
 local function OnSpellCast(unitID, spellID)
 	-- Ignore the cast if the spell name is excluded.
-	local spellName = GetSpellInfo(spellID) or UNKNOWN
+	local spellName = GetSkillName(spellID)
 	local cooldownExclusions = MSBTProfiles.currentProfile.cooldownExclusions
 	if (cooldownExclusions[spellName] or cooldownExclusions[spellID]) then return end
 
@@ -113,7 +111,7 @@ local function OnSpellCast(unitID, spellID)
 	if (resetAbilities[spellID] and unitID == "player") then
 		-- Remove active cooldowns that the game is now reporting inactive.
 		for spellID, remainingDuration in pairs(activeCooldowns[unitID]) do
-			local startTime, duration = GetSpellCooldown(spellID)
+			local startTime, duration = MSBTGetSpellCooldown(spellID)
 			if (duration <= 1.5 and remainingDuration > 1.5) then activeCooldowns[unitID][spellID] = nil end
 
 			-- Force an update.
@@ -163,7 +161,7 @@ local function OnUpdateCooldown(cooldownType, cooldownFunc)
 		local _, duration, enabled = cooldownFunc(cooldownID)
 		if (enabled == 1) then
 			-- Add the cooldown to the active cooldowns list if the cooldown is longer than the cooldown threshold or it's required to show.
-			local cooldownName = GetSpellInfo(cooldownID)
+			local cooldownName = GetSkillName(cooldownID)
 			local ignoreCooldownThreshold = MSBTProfiles.currentProfile.ignoreCooldownThreshold
 			if (duration >= MSBTProfiles.currentProfile.cooldownThreshold or ignoreCooldownThreshold[cooldownName] or ignoreCooldownThreshold[cooldownID]) then
 				activeCooldowns[cooldownType][cooldownID] = duration
@@ -192,7 +190,7 @@ local function OnUpdateCooldown(cooldownType, cooldownFunc)
 			if (playerClass == "DEATHKNIGHT" and duration == RUNE_COOLDOWN and cooldownType == "player" and not runeCooldownAbilities[cooldownID]) then duration = -1 end
 
 			-- Add the cooldown to the active cooldowns list if the cooldown is longer than the cooldown threshold or it's required to show.
-			local cooldownName = GetSpellInfo(cooldownID)
+			local cooldownName = GetSkillName(cooldownID)
 			local ignoreCooldownThreshold = MSBTProfiles.currentProfile.ignoreCooldownThreshold
 			if (duration >= MSBTProfiles.currentProfile.cooldownThreshold or ignoreCooldownThreshold[cooldownName] or ignoreCooldownThreshold[cooldownID]) then
 				activeCooldowns[cooldownType][cooldownID] = duration
@@ -241,8 +239,8 @@ local function OnUpdate(frame, elapsed)
 		-- Loop through all of the active cooldowns.
 		local currentTime = GetTime()
 		for cooldownType, cooldowns in pairs(activeCooldowns) do
-			local cooldownFunc = (cooldownType == "item") and C_Container.GetItemCooldown or GetSpellCooldown
-			local infoFunc = (cooldownType == "item") and GetItemInfo or GetSpellInfo
+			local cooldownFunc = (cooldownType == "item") and C_Container.GetItemCooldown or MSBTGetSpellCooldown
+			local infoFunc = (cooldownType == "item") and GetItemInfo or MSBTGetSpellInfo
 			for cooldownID, remainingDuration in pairs(cooldowns) do
 				-- Ensure the cooldown is still valid.
 				local startTime, duration, enabled = cooldownFunc(cooldownID)
@@ -332,7 +330,7 @@ end
 -- Called when spell cooldowns begin.
 -- ****************************************************************************
 function eventFrame:SPELL_UPDATE_COOLDOWN()
-	OnUpdateCooldown("player", GetSpellCooldown)
+	OnUpdateCooldown("player", MSBTGetSpellCooldown)
 end
 
 
@@ -340,7 +338,7 @@ end
 -- Called when pet cooldowns begin.
 -- ****************************************************************************
 function eventFrame:PET_BAR_UPDATE_COOLDOWN()
-	OnUpdateCooldown("pet", GetSpellCooldown)
+	OnUpdateCooldown("pet", MSBTGetSpellCooldown)
 end
 
 

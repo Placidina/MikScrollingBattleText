@@ -19,10 +19,13 @@ local string_sub = string.sub
 local string_gsub = string.gsub
 local string_match = string.match
 local math_floor = math.floor
-local GetSpellInfo = C_Spell and C_Spell.GetSpellInfo or GetSpellInfo
+
+local IsClassic = WOW_PROJECT_ID >= WOW_PROJECT_CLASSIC
 local LoadAddOn = C_AddOns and C_AddOns.LoadAddOn or _G.LoadAddOn
-local GetSpellTexture = C_Spell and C_Spell.GetSpellTexture or GetSpellTexture
 local GetAddOnMetadata =  C_AddOns and C_AddOns.GetAddOnMetadata or GetAddOnMetadata
+local GetSpellInfo = C_Spell and C_Spell.GetSpellInfo or GetSpellInfo
+local GetSpellCooldown = C_Spell and C_Spell.GetSpellCooldown or GetSpellCooldown
+local GetSpellTexture = C_Spell and C_Spell.GetSpellTexture or GetSpellTexture
 
 -------------------------------------------------------------------------------
 -- Mod constants
@@ -129,18 +132,45 @@ local function Print(msg, r, g, b)
 	DEFAULT_CHAT_FRAME:AddMessage("MSBT: " .. tostring(msg), r, g, b)
 end
 
+-- ****************************************************************************
+-- Retrieves detailed information about a spell.
+-- ****************************************************************************
+local function MSBTGetSpellInfo(spell)
+    if not IsClassic then
+        local spellInfo = GetSpellInfo(spell)
+        if not spellInfo then
+            return nil, nil, nil, nil, nil, nil, nil, nil
+        end
+
+		return spellInfo.name, nil, spellInfo.iconID, spellInfo.castTime, spellInfo.minRange, spellInfo.maxRange, spellInfo.spellID, spellInfo.originalIconID
+    end
+
+	return GetSpellInfo(spell)
+end
+
+-- ****************************************************************************
+-- Returns the cooldown information for the given spell name.
+-- ****************************************************************************
+local function MSBTGetSpellCooldown(spell)
+    if not IsClassic then
+        local spellCooldownInfo = GetSpellCooldown(spell)
+        if not spellCooldownInfo then
+            return nil, nil, nil, nil
+        end
+
+		return spellCooldownInfo.startTime, spellCooldownInfo.duration, spellCooldownInfo.isEnabled, spellCooldownInfo.modRate
+    end
+
+	return GetSpellCooldown(spell)
+end
 
 -- ****************************************************************************
 -- Returns a skill name for the passed id or unknown if the id invalid.
 -- ****************************************************************************
-local function GetSkillName(skillID)
-	local spell = GetSpellInfo(skillID)
-	if (not spell) then
-		Print("Skill ID " .. tostring(skillID) .. " has been removed by Blizzard.")
-	end
-	return spell.name or UNKNOWN
+local function GetSkillName(spell)
+	local name = MSBTGetSpellInfo(spell)
+	return name or UNKNOWN
 end
-
 
 -- ****************************************************************************
 -- Returns an SI formatted value given a number and a precision.
@@ -195,10 +225,12 @@ end--]]
 mod.translations = translations
 
 -- Protected Functions.
-mod.CopyTable			= CopyTable
-mod.EraseTable			= EraseTable
-mod.SplitString			= SplitString
-mod.Print				= Print
-mod.GetSkillName		= GetSkillName
-mod.ShortenNumber		= ShortenNumber
+mod.CopyTable				= CopyTable
+mod.EraseTable				= EraseTable
+mod.SplitString				= SplitString
+mod.Print					= Print
+mod.GetSkillName			= GetSkillName
+mod.ShortenNumber			= ShortenNumber
+mod.MSBTGetSpellInfo		= MSBTGetSpellInfo
+mod.MSBTGetSpellCooldown	= MSBTGetSpellCooldown
 --mod.SeparateNumber		= SeparateNumber

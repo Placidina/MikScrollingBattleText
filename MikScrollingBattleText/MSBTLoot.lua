@@ -13,19 +13,18 @@ MikSBT[moduleName] = module
 -- Imports.
 -------------------------------------------------------------------------------
 
--- Local references to various modules for faster access.
-local MSBTProfiles = MikSBT.Profiles
-local MSBTParser = MikSBT.Parser
-
 -- Get local references to various functions for faster access.
 local string_gsub = string.gsub
 local string_format = string.format
 local math_ceil = math.ceil
+
 local GetItemInfo = C_Item and C_Item.GetItemInfo or GetItemInfo
 local GetItemCount = C_Item and C_Item.GetItemCount or GetItemCount
+
+-- Local references to various modules for faster access.
+local MSBTProfiles = MikSBT.Profiles
+local MSBTParser = MikSBT.Parser
 local DisplayEvent = MikSBT.Animations.DisplayEvent
-
-
 
 -------------------------------------------------------------------------------
 -- Constants.

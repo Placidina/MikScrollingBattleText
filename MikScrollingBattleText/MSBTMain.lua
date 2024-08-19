@@ -30,11 +30,11 @@ local math_abs = math.abs
 local bit_bor = bit.bor
 local FormatLargeNumber = FormatLargeNumber
 local GetTime = GetTime
-local GetSpellInfo = C_Spell and C_Spell.GetSpellInfo or GetSpellInfo
 local EraseTable = MikSBT.EraseTable
 local GetSkillName = MikSBT.GetSkillName
 local ShortenNumber = MikSBT.ShortenNumber
 --local SeparateNumber = MikSBT.SeparateNumber
+local MSBTGetSpellInfo = MikSBT.MSBTGetSpellInfo
 local DisplayEvent = MSBTAnimations.DisplayEvent
 local IsScrollAreaActive = MSBTAnimations.IsScrollAreaActive
 local IsScrollAreaIconShown = MSBTAnimations.IsScrollAreaIconShown
@@ -44,7 +44,6 @@ local TestFlagsAll = MSBTParser.TestFlagsAll
 local triggerSuppressions = MSBTTriggers.triggerSuppressions
 local powerTypes = MSBTTriggers.powerTypes
 local classMap = MSBTParser.classMap
-
 
 -------------------------------------------------------------------------------
 -- Constants.
@@ -1152,14 +1151,17 @@ local function ParserEventsHandler(parserEvent)
 	-- Attempt to get the texture for the event if icons are not disabled.
 	local effectTexture
 	if (not currentProfile.skillIconsDisabled and IsScrollAreaIconShown(eventSettings.scrollArea)) then
-		if (skillID) then _, _, effectTexture = GetSpellInfo(skillID) end
+		if (skillID) then
+			_, _, effectTexture = MSBTGetSpellInfo(skillID)
+		end
 
 		-- Override texture for dispels and interrupts.
 		if ((eventType == "dispel" or eventType == "interrupt" or (eventType == "miss" and parserEvent.missType == "RESIST")) and parserEvent.extraSkillID) then
-			_, _, effectTexture = GetSpellInfo(parserEvent.extraSkillID)
+			_, _, effectTexture = MSBTGetSpellInfo(parserEvent.extraSkillID)
 		end
+
 		if (not effectTexture and effectName) then
-			_, _, effectTexture = GetSpellInfo(effectName)
+			_, _, effectTexture = MSBTGetSpellInfo(effectName)
 		end
 	end
 

@@ -23,8 +23,6 @@ local string_gsub = string.gsub
 local string_format = string.format
 local string_gmatch = string.gmatch
 local FormatLargeNumber = FormatLargeNumber
-local GetSpellInfo = C_Spell and C_Spell.GetSpellInfo or GetSpellInfo
-local GetSpellCooldown = C_Spell and C_Spell.GetSpellCooldown or GetSpellCooldown
 local Print = MikSBT.Print
 local EraseTable = MikSBT.EraseTable
 local DisplayEvent = MikSBT.Animations.DisplayEvent
@@ -37,7 +35,8 @@ local REACTION_HOSTILE = MSBTParser.REACTION_HOSTILE
 local unitMap = MSBTParser.unitMap
 local classMap = MSBTParser.classMap
 
-
+local MSBTGetSpellInfo = MikSBT.MSBTGetSpellInfo
+local MSBTGetSpellCooldown = MikSBT.MSBTGetSpellCooldown
 
 -------------------------------------------------------------------------------
 -- Constants.
@@ -104,10 +103,10 @@ local function IsSkillUnavailable(skillName)
 	if (not skillName or skillName == "") then return true end
 
 	-- Pass if the skill isn't known.
-	if (not GetSpellInfo(skillName)) then return true end
+	if (not MSBTGetSpellInfo(skillName)) then return true end
 
 	-- Pass check if the skillName is cooling down (but ignore the global cooldown).
-	local start, duration = GetSpellCooldown(skillName)
+	local start, duration = MSBTGetSpellCooldown(skillName)
 	if (start > 0 and duration > 1.5) then return true end
 end
 
@@ -313,7 +312,7 @@ local function CategorizeTrigger(triggerSettings)
 			for x = 1, #conditions, 3 do
 				if (conditions[x] == "skillName" and conditions[x+1] == "eq" and conditions[x+2]) then skillName = conditions[x+2] end
 				if (conditions[x] == "recipientAffiliation" and conditions[x+1] == "eq" and conditions[x+2] == FLAG_YOU) then recipientAffiliation = FLAG_YOU end
-				if (conditions[x] == "skillID" and conditions[x+1] == "eq" and conditions[x+2]) then skillName = GetSpellInfo(conditions[x+2]) or UNKNOWN end
+				if (conditions[x] == "skillID" and conditions[x+1] == "eq" and conditions[x+2]) then skillName = MSBTGetSpellInfo(conditions[x+2]) or UNKNOWN end
 			end
 
 				if (skillName and recipientAffiliation) then triggerSuppressions[skillName] = true end
@@ -565,7 +564,7 @@ local function DisplayTrigger(triggerSettings, sourceName, sourceClass, recipien
 	if (iconSkill) then
 		if (skillName and string_find(iconSkill, "%s", 1, true)) then iconSkill = string_gsub(iconSkill, "%%s", skillName) end
 		if (extraSkillName and string_find(iconSkill, "%e", 1, true)) then iconSkill = string_gsub(iconSkill, "%%e", extraSkillName) end
-		_, _, effectTexture = GetSpellInfo(iconSkill)
+		_, _, effectTexture = MSBTGetSpellInfo(iconSkill)
 	end
 
 	-- Display the trigger event.
@@ -779,7 +778,7 @@ local function HandleCombatLogTriggers(timestamp, event, hideCaster, sourceGUID,
 	-- Get the texture for the event and display triggers that aren't excepted.
 	if (next(triggersToFire)) then
 		local effectTexture
-		if (parserEvent.skillID or parserEvent.extraSkillID) then _, _, effectTexture = GetSpellInfo(parserEvent.extraSkillID or parserEvent.skillID) end
+		if (parserEvent.skillID or parserEvent.extraSkillID) then _, _, effectTexture = MSBTGetSpellInfo(parserEvent.extraSkillID or parserEvent.skillID) end
 
 		-- Display the fired triggers if none of the exceptions are true.
 		local sourceName = parserEvent.sourceName
